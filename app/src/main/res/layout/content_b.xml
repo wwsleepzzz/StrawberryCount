@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.zzz.wc.strawberrycount.bActivity"
+    tools:showIn="@layout/activity_box">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date"
+                        android:id="@+id/dateButton"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/dateText"
+                        />
+
+                </LinearLayout>
+
+
+                <TableLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+                    <TableRow
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent">
+
+                        <TextView android:text="    "
+                            android:layout_weight="1"/>
+                        <TextView android:text="剩下"
+                            android:layout_weight="20"
+                            android:textAlignment="center" />
+                        <TextView android:text="增加"
+                            android:layout_weight="20"
+                            android:textAlignment="center" />
+                    </TableRow>
+
+
+                    <TableRow
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent">
+
+                        <TextView
+                            android:text="黑盤"
+                            />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="3"
+                            android:id="@+id/edit_black" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_black_plus"
+                            android:textAlignment="center" />
+
+                    </TableRow>
+
+                    <TableRow  android:layout_height="wrap_content">
+
+                        <TextView
+
+                            android:layout_column="0"
+                            android:text="扁盒"
+                            />
+
+                        <EditText
+                            android:layout_width="2dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_flat" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:textAlignment="center"
+                            android:id="@+id/edit_flat_plus" />
+
+                    </TableRow>
+
+                    <TableRow  android:layout_height="match_parent"
+                        android:layout_width="match_parent">
+
+                        <TextView
+                            android:layout_column="0"
+                            android:text="厚底"
+                            />
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_top" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:textAlignment="center"
+                            android:id="@+id/edit_top_plus" />
+
+                    </TableRow>
+
+                    <TableRow  android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_column="0"
+                            android:text="pink cube"
+                            />
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_pinkcube"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_pinkcube_plus"
+                            android:textAlignment="center" />
+                    </TableRow>
+                    <TableRow  android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_column="0"
+                            android:text="yellow cube"
+                            />
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_yellowcube"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_yellowcube_plus"
+                            android:textAlignment="center" />
+                    </TableRow>
+                    <TableRow  android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_column="0"
+                            android:text="yummy cube"
+                            />
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_yummycube"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_yummycube_plus"
+                            android:textAlignment="center" />
+
+                    </TableRow>
+                    <TableRow
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        >
+
+                        <TextView
+                            android:text="normal cube"
+                            />
+
+                        <EditText
+                            android:layout_width="10dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:id="@+id/edit_normalcube"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:inputType="number"
+                            android:ems="10"
+                            android:id="@+id/edit_normalcube_plus"
+                            android:textAlignment="center" />
+
+                    </TableRow>
+
+
+                </TableLayout>
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="90dp">
+
+
+                    <TableLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView android:text="扁盒price"
+                                android:layout_weight="1"/>
+
+                            <EditText
+                                android:id="@+id/edit_flat_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ems="3"
+                                android:inputType="numberDecimal" />
+
+                            <TextView android:text="黑盤price" />
+                            <EditText
+                                android:id="@+id/edit_black_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:ems="3"
+                                android:inputType="numberDecimal" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView android:text="厚底 price" />
+
+                            <EditText
+                                android:id="@+id/edit_top_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:ems="3"
+                                android:inputType="numberDecimal" />
+
+                            <TextView android:text="cube price" />
+
+                            <EditText
+                                android:id="@+id/edit_cube_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:ems="3"
+                                android:inputType="numberDecimal" />
+
+                        </TableRow>
+
+
+
+
+                    </TableLayout>
+
+                </LinearLayout>
+
+                <include layout="@layout/content_checker"
+                    android:id="@+id/include" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <Button
+                        android:text="儲存"
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:id="@+id/button"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
