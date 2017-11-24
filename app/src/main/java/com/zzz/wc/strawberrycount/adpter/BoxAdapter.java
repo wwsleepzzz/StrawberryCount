@@ -1,9 +1,10 @@
 package com.zzz.wc.strawberrycount.adpter;
 /**
- * 票券 Adapter
+ * Box Adapter
  */
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,12 +14,15 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.zzz.wc.strawberrycount.R;
+import com.zzz.wc.strawberrycount.checker.Checker;
+import com.zzz.wc.strawberrycount.database.BackupData;
 import com.zzz.wc.strawberrycount.util.Tag;
 import com.zzz.wc.strawberrycount.box.Box;
 import com.zzz.wc.strawberrycount.util.BoxUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -27,28 +31,36 @@ public class BoxAdapter extends BaseAdapter {
     private Context context;
     private List<Box> boxes;            //原始資料
     private List<Boolean> checked;
-
+    private List<Checker>checkers;
+    private HashMap<String, Double> map;
     private OnClickListener onClickListener;
 
-    public BoxAdapter(Context context, List<Box> cards) {
+
+    public BoxAdapter(Context context, List<Box> cards ,List<Checker>checkerList) {
         this.context = context;
         this.boxes = (cards == null || cards.isEmpty()) ? new ArrayList<Box>() : cards;
+        this.checkers = (checkerList == null || checkerList.isEmpty()) ? new ArrayList<Checker>() : checkerList;
+        map =  BoxUtil.getCheckerMap(checkers);
+
         checked = new ArrayList<Boolean>(cards.size());
         for (int i = 0; i < cards.size(); i++) {
             checked.add(false);
         }
 
 
-        onClickListener = new OnClickListener() {
+//        onClickListener = new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                int btnPosition = (Integer) v.getTag();
+//                CheckBox cb = (CheckBox) v;
+//                checked.set(btnPosition, cb.isChecked());
+//
+//            }
+//        };
 
-            @Override
-            public void onClick(View v) {
-                int btnPosition = (Integer) v.getTag();
-                CheckBox cb = (CheckBox) v;
-                checked.set(btnPosition, cb.isChecked());
 
-            }
-        };
+
     }
 
     @Override
@@ -107,9 +119,7 @@ public class BoxAdapter extends BaseAdapter {
         Box box = (Box) getItem(position);
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
-//        holder.tvDate.setText(sdf.format(box.getDate()));
+
         holder.tvDate.setText(new SimpleDateFormat("yyyy").format(box.getDate()));
         holder.tvDate2.setText(new SimpleDateFormat("MM/dd").format(box.getDate()));
 
@@ -130,19 +140,25 @@ public class BoxAdapter extends BaseAdapter {
         holder.tvCube_pack.setText("0");
         holder.tvTotal.setText("$0");
 
-        //checker
-        if(box.getCheckerTime()!=null && box.getCheckerTime_end()!=null){
-            double hr = BoxUtil.handleCheckerHour(box);
-            holder.tvCheckerTime.setText(hourFormat.format(box.getCheckerTime()) + "~"
-                    + hourFormat.format(box.getCheckerTime_end())  + " (" + String.format("%.2f",hr) + " hr)" );
+        //checker 錢錢
 
-            holder.getTvCheckerTotal.setText("$ " + String.format("%.2f", hr*box.getCheckerPrice()));
+        if(map!=null && !map.isEmpty()){
+
+            if(map.get(BoxUtil.converToString(box.getDate()))!=null){
+                double total =Double.valueOf(map.get(BoxUtil.converToString(box.getDate()))) ;
+                if(total>0){
+                    holder.getTvCheckerTotal.setText("$ " + String.format("%.2f",total ));
+                }
+            }
+
+
         }
         else{
-            holder.tvCheckerTime.setText(" X");
-            holder.getTvCheckerTotal.setText("");
+            holder.getTvCheckerTotal.setText(" X");
         }
 
+
+        //box 錢錢
         if(position < boxes.size()-1){
             Box preBox = (Box) getItem(position+1);
             if(preBox !=null){
@@ -156,6 +172,8 @@ public class BoxAdapter extends BaseAdapter {
         }else{
             holder.tvTotal.setText("$0");
         }
+
+
 
 
         return row;
@@ -196,6 +214,7 @@ public class BoxAdapter extends BaseAdapter {
         TextView tvCheckerTime;
         TextView getTvCheckerTotal;
     }
+
 
 
 }

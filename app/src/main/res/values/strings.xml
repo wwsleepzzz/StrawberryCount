@@ -1,21 +1,43 @@
 <resources>
-    <string name="app_name">StrawberryCount</string>
+    <string name="app_name">Strawberry Count 草莓數來寶</string>
     <string name="action_settings">Settings</string>
     <string name="action_dataRecover">Data Recover</string>
     <string name="action_dataBackup">Data Backup</string>
     <string name="title_activity_main2"></string>
-    <string name="title_delete">刪除</string>
-    <string name="title_activity_main3">Main3Activity</string>
+    <string name="title_delete">Delete</string>
+    <string name="title_save">Save</string>
     <string name="title_activity_b">bActivity</string>
-
-    <!-- 正式 -->
-    <string name="banner_ad_unit_id">ca-app-pub-2461314840210339/4281666307</string>
     <string name="title_activity_main_list">MainListActivity</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_main_main">MainMainActivity</string>
+    <string name="title_backup">backup 備份</string>
+    <string name="title_recover">recover 匯入資料</string>
+    <string name="txt_save_succuess">save succuess !</string>
+    <string name="txt_save_delete">delete succuess !</string>
+    <string name="msg_delete">Are you sure delete?</string>
+    <string name="txt_new_checker">add a checker time</string>
 
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="backup_data">Backup data</string>
+    <string name="import_data">Import data</string>
+    <string name="backup_before_import">Do you want backup current database before import an old database?</string>
+    <string name="select_file">Select file</string>
+    <string name="backup_empty">Backup file is empty</string>
+
+    <!-- -->
+    <string name="title_note">Title note</string>
+    <string name="content">Content</string>
+    <string name="title_activity_note">Create Note</string>
+
+
+    <!-- 正式 -->
+    <string name="banner_ad_unit_id">ca-app-pub-2461314840210339/4281666307</string>
 
     <!-- 測試
 

@@ -1,35 +1,47 @@
 package com.zzz.wc.strawberrycount.activity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.zzz.wc.strawberrycount.R;
+import com.zzz.wc.strawberrycount.adpter.BoxAdapter;
+import com.zzz.wc.strawberrycount.adpter.BtnListenerInterface;
+import com.zzz.wc.strawberrycount.adpter.CheckerAdapter;
+import com.zzz.wc.strawberrycount.adpter.MyListView;
 import com.zzz.wc.strawberrycount.box.Box;
 import com.zzz.wc.strawberrycount.box.BoxDAO;
+import com.zzz.wc.strawberrycount.checker.Checker;
+import com.zzz.wc.strawberrycount.checker.CheckerDAO;
 import com.zzz.wc.strawberrycount.util.BoxUtil;
 import com.zzz.wc.strawberrycount.util.DateUtil;
 import com.zzz.wc.strawberrycount.util.Tag;
 
 import java.util.Calendar;
+import java.util.List;
 
-public class BoxActivity extends AppCompatActivity {
+public class BoxActivity extends AppCompatActivity implements CheckerAdapter.CheckerListenerInterface {
     private String className = "BoxActivity";
-    private Button btn;
     private EditText edit_flat;
     private EditText edit_top;
     private EditText edit_black;
@@ -54,13 +66,20 @@ public class BoxActivity extends AppCompatActivity {
     private TextView dateText;
 
     //checker
-    private EditText edit_checker_price;
-    private TextView txtTime_start;
-    private TextView txtTime_end;
-    private ImageButton btnTime_start;
-    private ImageButton btnTime_end;
-    private Button btnStart_reset;
-    private Button btnEnd_reset;
+    private CheckerDAO checkerDAO;
+    private List<Checker> checkerList;
+    private CheckerAdapter checkerAdapter;
+    private MyListView checkerListView;
+    private Button btn_checker;
+    //checker
+//    private EditText edit_checker_price;
+//    private TextView txtTime_start;
+//    private TextView txtTime_end;
+//    private ImageButton btnTime_start;
+//    private ImageButton btnTime_end;
+//    private Button btnStart_reset;
+//    private Button btnEnd_reset;
+//    private Button btn_checker;
 
     private Box box;
     private Box preBox;
@@ -79,6 +98,8 @@ public class BoxActivity extends AppCompatActivity {
 
         init();
         boxDAO = new BoxDAO(this);
+        checkerDAO = new CheckerDAO(this);
+
 
         String date = null;
         Bundle extras = getIntent().getExtras();
@@ -117,97 +138,151 @@ public class BoxActivity extends AppCompatActivity {
                 box.setCheckerPrice(20.41);
                 putToUI(box);
             }
-
         }
+    }
 
 
-        btn.setOnClickListener(new View.OnClickListener() {
+    public void init(){
+        edit_flat = (EditText) findViewById(R.id.edit_flat);
+        edit_top = (EditText) findViewById(R.id.edit_top);
+        edit_black = (EditText) findViewById(R.id.edit_black);
+        edit_pinkcube = (EditText) findViewById(R.id.edit_pinkcube);
+        edit_yellowcube = (EditText) findViewById(R.id.edit_yellowcube);
+        edit_yummycube = (EditText) findViewById(R.id.edit_yummycube);
+        edit_normalcube = (EditText) findViewById(R.id.edit_normalcube);
+        edit_flat_plus = (EditText) findViewById(R.id.edit_flat_plus);
+        edit_top_plus = (EditText) findViewById(R.id.edit_top_plus);
+        edit_black_plus = (EditText) findViewById(R.id.edit_black_plus);
+        edit_pinkcube_plus = (EditText) findViewById(R.id.edit_pinkcube_plus);
+        edit_yellowcube_plus = (EditText) findViewById(R.id.edit_yellowcube_plus);
+        edit_yummycube_plus = (EditText) findViewById(R.id.edit_yummycube_plus);
+        edit_normalcube_plus = (EditText) findViewById(R.id.edit_normalcube_plus);
+        edit_flat_price = (EditText) findViewById(R.id.edit_flat_price);
+        edit_black_price = (EditText) findViewById(R.id.edit_black_price);
+        edit_top_price = (EditText) findViewById(R.id.edit_top_price);
+        edit_cube_price = (EditText) findViewById(R.id.edit_cube_price);
+
+        dateButton = (Button)findViewById(R.id.dateButton);
+        dateText = (TextView)findViewById(R.id.dateText);
+
+        checkerListView = (MyListView) findViewById(R.id.lv_checkerlist);
+        btn_checker = (Button) findViewById(R.id.btn_checker);
+
+
+
+        dateButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+                new DatePickerDialog(BoxActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int day) {
+                        String format =   setDateFormat(year,month,day);
+                        dateText.setText("日期: "+format);
+                        box.setDate(DateUtil.stringToDate(format));
+                    }
+
+                }, mYear,mMonth, mDay).show();
+            }
+
+        });
+
+
+
+        btn_checker.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-                int flat = Integer.parseInt(handleEditText(edit_flat));
-                int top = Integer.parseInt(handleEditText(edit_top));
-                int black = Integer.parseInt(handleEditText(edit_black));
-                int pink = Integer.parseInt(handleEditText(edit_pinkcube));
-                int yellow = Integer.parseInt(handleEditText(edit_yellowcube));
-                int yummy = Integer.parseInt(handleEditText(edit_yummycube));
-                int normal = Integer.parseInt(handleEditText(edit_normalcube));
-
-                int flat_plus = Integer.parseInt(handleEditText(edit_flat_plus));
-                int top_plus = Integer.parseInt(handleEditText(edit_top_plus));
-                int black_plus = Integer.parseInt(handleEditText(edit_black_plus));
-                int pink_plus = Integer.parseInt(handleEditText(edit_pinkcube_plus));
-                int yellow_plus = Integer.parseInt(handleEditText(edit_yellowcube_plus));
-                int yummy_plus = Integer.parseInt(handleEditText(edit_yummycube_plus));
-                int normal_plus = Integer.parseInt(handleEditText(edit_normalcube_plus));
-                double price_flat =  Double.parseDouble(handleEditText_double(edit_flat_price));
-                double price_black =  Double.parseDouble(handleEditText_double(edit_black_price));
-                double price_top =  Double.parseDouble(handleEditText_double(edit_top_price));
-                double price_cube =  Double.parseDouble(handleEditText_double(edit_cube_price));
-                double checkerPrice = Double.parseDouble(handleEditText_double(edit_checker_price));
-
-
-                box.setFlat(flat);
-                box.setFlat_plus(flat_plus);
-                box.setTop(top);
-                box.setTop_plus(top_plus);
-                box.setBlack(black);
-                box.setBlack_plus(black_plus);
-                box.setCubePink(pink);
-                box.setCubePink_plus(pink_plus);
-                box.setCubeYellow(yellow);
-                box.setCubeYellow_plus(yellow_plus);
-                box.setCubeYummy(yummy);
-                box.setCubeYummy_plus(yummy_plus);
-                box.setCubeNormal(normal);
-                box.setCubeNormal_plus(normal_plus);
-                box.setPrint_flat(price_flat);
-                box.setPrint_black(price_black);
-                box.setPrint_top(price_top);
-                box.setPrint_cube(price_cube);
-                box.setCheckerPrice(checkerPrice);
-
-
-                if (box.getDate()==null) {
-                    Toast.makeText(BoxActivity.this, "請選日期", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(box.getCheckerTime()!=null ){
-                    if(box.getCheckerTime_end()==null){
-                        Toast.makeText(BoxActivity.this, "請輸入結束時間", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                }
-
-                if(box.getCheckerTime_end()!=null ){
-                    if(box.getCheckerTime()==null){
-                        Toast.makeText(BoxActivity.this, "請輸入開始時間", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                }
-
-                if(BoxUtil.isChecker(box)&& BoxUtil.handleCheckerHour(box)<=0){
-                    Toast.makeText(BoxActivity.this, "結束時間不能小於開始時間", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-
-//                preBox= boxDAO.getByDate(box);
-//                BoxUtil.handleTotal(box,preBox);
-
-                long i = boxDAO.saveByDate(box);
-                if (i > 0) {
-                    Toast.makeText(BoxActivity.this, "儲存成功", Toast.LENGTH_LONG).show();
-                    BoxActivity.this.finish();
-                }
+                openCheckerDialog(null);
             }
         });
 
 
+        checkerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                Log.d(className,"checkerListView click");
+
+                Checker checker = checkerList.get(position);
+                if(checker == null || checker.getCheckerDate()==null)
+                    return;
+
+
+                openCheckerDialog(checker);
+
+            }
+        });
     }
 
+    public List getCheckerData(){
 
+        return checkerDAO.getByDate(BoxUtil.converToString(box.getDate()));
+    }
+    /**
+     * 儲存
+     */
+    public void save(){
+        int flat = Integer.parseInt(handleEditText(edit_flat));
+        int top = Integer.parseInt(handleEditText(edit_top));
+        int black = Integer.parseInt(handleEditText(edit_black));
+        int pink = Integer.parseInt(handleEditText(edit_pinkcube));
+        int yellow = Integer.parseInt(handleEditText(edit_yellowcube));
+        int yummy = Integer.parseInt(handleEditText(edit_yummycube));
+        int normal = Integer.parseInt(handleEditText(edit_normalcube));
+
+        int flat_plus = Integer.parseInt(handleEditText(edit_flat_plus));
+        int top_plus = Integer.parseInt(handleEditText(edit_top_plus));
+        int black_plus = Integer.parseInt(handleEditText(edit_black_plus));
+        int pink_plus = Integer.parseInt(handleEditText(edit_pinkcube_plus));
+        int yellow_plus = Integer.parseInt(handleEditText(edit_yellowcube_plus));
+        int yummy_plus = Integer.parseInt(handleEditText(edit_yummycube_plus));
+        int normal_plus = Integer.parseInt(handleEditText(edit_normalcube_plus));
+        double price_flat =  Double.parseDouble(handleEditText_double(edit_flat_price));
+        double price_black =  Double.parseDouble(handleEditText_double(edit_black_price));
+        double price_top =  Double.parseDouble(handleEditText_double(edit_top_price));
+        double price_cube =  Double.parseDouble(handleEditText_double(edit_cube_price));
+//        double checkerPrice = Double.parseDouble(handleEditText_double(edit_checker_price));
+
+
+        box.setFlat(flat);
+        box.setFlat_plus(flat_plus);
+        box.setTop(top);
+        box.setTop_plus(top_plus);
+        box.setBlack(black);
+        box.setBlack_plus(black_plus);
+        box.setCubePink(pink);
+        box.setCubePink_plus(pink_plus);
+        box.setCubeYellow(yellow);
+        box.setCubeYellow_plus(yellow_plus);
+        box.setCubeYummy(yummy);
+        box.setCubeYummy_plus(yummy_plus);
+        box.setCubeNormal(normal);
+        box.setCubeNormal_plus(normal_plus);
+        box.setPrint_flat(price_flat);
+        box.setPrint_black(price_black);
+        box.setPrint_top(price_top);
+        box.setPrint_cube(price_cube);
+//        box.setCheckerPrice(checkerPrice);
+
+
+        if (box.getDate()==null) {
+            Toast.makeText(BoxActivity.this, "請選日期", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+
+
+        long i = boxDAO.saveByDate(box);
+        if (i > 0) {
+            Toast.makeText(BoxActivity.this, getString(R.string.txt_save_succuess), Toast.LENGTH_LONG).show();
+            BoxActivity.this.finish();
+        }
+    }
 
 
 
@@ -238,120 +313,7 @@ public class BoxActivity extends AppCompatActivity {
         return ss;
     }
 
-    public void init(){
-        btn = (Button) findViewById(R.id.button);
-        edit_flat = (EditText) findViewById(R.id.edit_flat);
-        edit_top = (EditText) findViewById(R.id.edit_top);
-        edit_black = (EditText) findViewById(R.id.edit_black);
-        edit_pinkcube = (EditText) findViewById(R.id.edit_pinkcube);
-        edit_yellowcube = (EditText) findViewById(R.id.edit_yellowcube);
-        edit_yummycube = (EditText) findViewById(R.id.edit_yummycube);
-        edit_normalcube = (EditText) findViewById(R.id.edit_normalcube);
-        edit_flat_plus = (EditText) findViewById(R.id.edit_flat_plus);
-        edit_top_plus = (EditText) findViewById(R.id.edit_top_plus);
-        edit_black_plus = (EditText) findViewById(R.id.edit_black_plus);
-        edit_pinkcube_plus = (EditText) findViewById(R.id.edit_pinkcube_plus);
-        edit_yellowcube_plus = (EditText) findViewById(R.id.edit_yellowcube_plus);
-        edit_yummycube_plus = (EditText) findViewById(R.id.edit_yummycube_plus);
-        edit_normalcube_plus = (EditText) findViewById(R.id.edit_normalcube_plus);
-        edit_flat_price = (EditText) findViewById(R.id.edit_flat_price);
-        edit_black_price = (EditText) findViewById(R.id.edit_black_price);
-        edit_top_price = (EditText) findViewById(R.id.edit_top_price);
-        edit_cube_price = (EditText) findViewById(R.id.edit_cube_price);
 
-        dateButton = (Button)findViewById(R.id.dateButton);
-        dateText = (TextView)findViewById(R.id.dateText);
-
-        edit_checker_price = (EditText) findViewById(R.id.edit_checker_price);
-        btnTime_start = (ImageButton) findViewById(R.id.btnTime_start);
-        btnTime_end = (ImageButton)findViewById(R.id.btnTime_end);
-        txtTime_start = (TextView)findViewById(R.id.txtTime_start);
-        txtTime_end = (TextView)findViewById(R.id.txtTime_end);
-        btnStart_reset = (Button) findViewById(R.id.btnStart_reset);
-        btnEnd_reset = (Button) findViewById(R.id.btnEnd_reset);
-
-
-        dateButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
-                new DatePickerDialog(BoxActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int day) {
-                        String format =   setDateFormat(year,month,day);
-                        dateText.setText("日期: "+format);
-                        box.setDate(DateUtil.stringToDate(format));
-                    }
-
-                }, mYear,mMonth, mDay).show();
-            }
-
-        });
-
-
-        btnTime_start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 設定初始時間
-                final Calendar c = Calendar.getInstance();
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
-
-                // 跳出時間選擇器
-                new TimePickerDialog(BoxActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-                        // 完成選擇，顯示時間
-                        txtTime_start.setText(hourOfDay + ":" + minute);
-                        String format = setTimeFormat(hourOfDay,minute);
-                        box.setCheckerTime(DateUtil.stringToTime(format));
-                    }
-                }, mHour, mMinute, false).show();
-            }
-        });
-
-        btnTime_end.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 設定初始時間
-                final Calendar c = Calendar.getInstance();
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
-
-                // 跳出時間選擇器
-                new TimePickerDialog(BoxActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-                        // 完成選擇，顯示時間
-                        txtTime_end.setText(hourOfDay + ":" + minute);
-                        String format = setTimeFormat(hourOfDay,minute);
-                        box.setCheckerTime_end(DateUtil.stringToTime(format));
-                    }
-                }, mHour, mMinute, false).show();
-            }
-        });
-
-        btnStart_reset.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View v) {
-                txtTime_start.setText(null);
-                box.setCheckerTime(null);
-            }
-        });
-
-        btnEnd_reset.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View v) {
-                txtTime_end.setText(null);
-                box.setCheckerTime_end(null);
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -366,31 +328,36 @@ public class BoxActivity extends AppCompatActivity {
                 long ii = boxDAO.delete(box);
 
                 if(ii>0){
-                    Toast.makeText(BoxActivity.this, "刪除成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BoxActivity.this, getString(R.string.txt_save_delete), Toast.LENGTH_SHORT).show();
                     BoxActivity.this.finish();
                 }
-                return true;
-
+                break;
+            case R.id.action_save:
+                save();
+                break;
             default:
-                return super.onOptionsItemSelected(item);
+               break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
-    /**
-     *
-     * @param
-     */
     private void readData(String date){
         if(date == null)
             return;
 
 
         box = boxDAO.getByDate(date);
-        if(box == null)
-            return;
+        checkerList = checkerDAO.getByDate(date);
 
-        putToUI(box);
+        if(box != null) {
+            putToUI(box);
+        }
+    }
+
+    private void reloadChecker(){
+        checkerList = getCheckerData();
+        checkerAdapter.reload(checkerList);
     }
 
     public void putToUI(Box box){
@@ -422,10 +389,182 @@ public class BoxActivity extends AppCompatActivity {
         edit_cube_price.setText(String.valueOf(box.getPrint_cube()));
 
         //讀取checker
-        edit_checker_price.setText(String.valueOf(box.getCheckerPrice()));
-        txtTime_start.setText(DateUtil.timeToString(box.getCheckerTime()));
-        txtTime_end .setText(DateUtil.timeToString(box.getCheckerTime_end()));
+//        edit_checker_price.setText(String.valueOf(box.getCheckerPrice()));
+//        txtTime_start.setText(DateUtil.timeToString(box.getCheckerTime()));
+//        txtTime_end .setText(DateUtil.timeToString(box.getCheckerTime_end()));
+
+        checkerAdapter = new CheckerAdapter(this, checkerList);
+        checkerAdapter.setCheckerListenerInterface(this);
+        checkerListView.setAdapter(checkerAdapter);
     }
+
+
+
+
+    private void openCheckerDialog(Checker cc) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxActivity.this);
+        LayoutInflater inflater = LayoutInflater.from(BoxActivity.this);
+        View contentView = inflater.inflate(R.layout.content_checker, null);
+
+        final EditText edit_checker_price = (EditText) contentView.findViewById(R.id.edit_checker_price);
+        ImageButton btnTime_start = (ImageButton) contentView.findViewById(R.id.btnTime_start);
+        ImageButton btnTime_end = (ImageButton)contentView.findViewById(R.id.btnTime_end);
+        final TextView txtTime_start = (TextView)contentView.findViewById(R.id.txtTime_start);
+        final TextView txtTime_end = (TextView)contentView.findViewById(R.id.txtTime_end);
+        Button btnStart_reset = (Button) contentView.findViewById(R.id.btnStart_reset);
+        Button btnEnd_reset = (Button) contentView.findViewById(R.id.btnEnd_reset);
+
+        builder.setView(contentView);
+
+        final Checker checker = new Checker();
+        if(cc !=null){ //編輯
+            edit_checker_price.setText(String.valueOf(cc.getCheckerPrice()));
+            txtTime_start.setText(DateUtil.timeToString(cc.getCheckerTime()));
+            txtTime_end .setText(DateUtil.timeToString(cc.getCheckerTime_end()));
+            checker.setCheckerDate(cc.getCheckerDate());
+            checker.setCheckerTime(cc.getCheckerTime());
+            checker.setCheckerTime_end(cc.getCheckerTime_end());
+            checker.setCheckerPrice(cc.getCheckerPrice());
+        }
+        else{
+            Checker lastChecker = checkerDAO.getLast();
+            if(lastChecker!=null)
+                edit_checker_price.setText(String.valueOf(lastChecker.getCheckerPrice()));
+        }
+
+
+
+        btnTime_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 設定初始時間
+                final Calendar c = Calendar.getInstance();
+                mHour = c.get(Calendar.HOUR_OF_DAY);
+                mMinute = c.get(Calendar.MINUTE);
+
+                // 跳出時間選擇器
+                new TimePickerDialog(BoxActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        // 完成選擇，顯示時間
+                        txtTime_start.setText(hourOfDay + ":" + minute);
+                        String format = setTimeFormat(hourOfDay,minute);
+                        checker.setCheckerTime(DateUtil.stringToTime(format));
+                    }
+                }, mHour, mMinute, false).show();
+            }
+        });
+
+        btnTime_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 設定初始時間
+                final Calendar c = Calendar.getInstance();
+                mHour = c.get(Calendar.HOUR_OF_DAY);
+                mMinute = c.get(Calendar.MINUTE);
+
+                // 跳出時間選擇器
+                new TimePickerDialog(BoxActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        // 完成選擇，顯示時間
+                        txtTime_end.setText(hourOfDay + ":" + minute);
+                        String format = setTimeFormat(hourOfDay,minute);
+                        checker.setCheckerTime_end(DateUtil.stringToTime(format));
+                    }
+                }, mHour, mMinute, false).show();
+            }
+        });
+
+        btnStart_reset.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+                txtTime_start.setText(null);
+                checker.setCheckerTime(null);
+            }
+        });
+
+        btnEnd_reset.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+                txtTime_end.setText(null);
+                checker.setCheckerTime_end(null);
+            }
+        });
+
+
+
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        double checkerPrice = Double.parseDouble(handleEditText_double(edit_checker_price));
+                        checker.setCheckerPrice(checkerPrice);
+                        saveChecker(checker);
+
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        dialog.dismiss();
+                        break;
+                }
+            }
+        };
+        builder.setPositiveButton(R.string.yes, dialogListener)
+                .setNegativeButton(R.string.no, dialogListener)
+                .setTitle(getString(R.string.txt_new_checker))
+                .setCancelable(false);
+
+        AlertDialog cardDialog = builder.create();
+        cardDialog.show();
+    }
+
+
+    /**
+     * 儲存checker
+     * @param checker
+     */
+    private void saveChecker(Checker checker){
+        if(checker.getCheckerTime()!=null ){
+            if(checker.getCheckerTime_end()==null){
+                Toast.makeText(BoxActivity.this, "請輸入結束時間", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
+        if(checker.getCheckerTime_end()!=null ){
+            if(checker.getCheckerTime()==null){
+                Toast.makeText(BoxActivity.this, "請輸入開始時間", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
+        if(BoxUtil.handleCheckerHour(checker.getCheckerTime().getTime(),checker.getCheckerTime_end().getTime())<=0){
+            Toast.makeText(BoxActivity.this, "結束時間不能小於開始時間", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+
+        checker.setCheckerDate(box.getDate());
+
+
+
+        final CheckerDAO checkerDAO = new CheckerDAO(this);
+        long i = checkerDAO.saveByUnid(checker);
+        if (i > 0) {
+            Toast.makeText(BoxActivity.this, getString(R.string.txt_save_succuess), Toast.LENGTH_LONG).show();
+            reloadChecker();
+
+//            calCheckerTotal();//偷存checker total
+        }
+    }
+
+
+
 
     /**
      * 處理日期
@@ -445,4 +584,34 @@ public class BoxActivity extends AppCompatActivity {
                 + String.valueOf(mMinute) + ":"
                 + String.valueOf("00");
     }
+
+    @Override
+    public void onClick(final Checker checker) {
+        Log.d(className,"onClick!!!");
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(BoxActivity.this);
+        builder.setTitle(R.string.title_delete).setIcon(R.mipmap.ic_launcher)
+                .setMessage(R.string.msg_delete);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                long i = checkerDAO.deleteByUnid(checker);
+                if(i>0){
+                    Toast.makeText(BoxActivity.this,getString(R.string.txt_save_succuess),Toast.LENGTH_SHORT).show();
+                    reloadChecker();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+
+
+    }
+
+
+
 }

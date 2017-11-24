@@ -35,7 +35,8 @@
                     android:layout_height="18dp"
                     android:layout_gravity="center"
                     android:text="日期"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    />
 
                 <TextView
                     android:id="@+id/txtview_date"

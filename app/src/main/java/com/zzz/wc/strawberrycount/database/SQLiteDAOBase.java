@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class SQLiteDAOBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	protected TaskDBOpenHelper taskDBOpenHelper;
+	protected BoxDBOpenHelper taskDBOpenHelper;
 	protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	protected SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
 	protected SimpleDateFormat fullFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -28,9 +28,13 @@ public abstract class SQLiteDAOBase implements Serializable {
 	
 	public SQLiteDAOBase(Context context)
 	{
-		taskDBOpenHelper = TaskDBOpenHelper.getInstance(context);
+		taskDBOpenHelper = BoxDBOpenHelper.getInstance(context);
 	}
 	
+
+	public SimpleDateFormat getDateFormat(){
+		return dateFormat;
+	}
 
 	protected abstract ContentValues ObjectToContentValues(Object obj) ;
 	/**

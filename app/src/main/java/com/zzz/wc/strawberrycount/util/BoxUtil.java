@@ -1,12 +1,21 @@
 package com.zzz.wc.strawberrycount.util;
 
+import android.content.Context;
+
 import com.zzz.wc.strawberrycount.box.Box;
+import com.zzz.wc.strawberrycount.checker.Checker;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by YC on 2017/10/25.
  */
 
 public class BoxUtil {
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public static int getCube(Box box , int cal) {
 
@@ -73,16 +82,9 @@ public class BoxUtil {
     }
 
 
-
-
-
-    /**
-     * @param box
-     * @return
-     */
-    public static double handleCheckerHour(Box box){
+    public static double handleCheckerHour(long start, long end){
         double hr = 0;
-        long diff =box.getCheckerTime_end().getTime() - box.getCheckerTime().getTime();
+        long diff =end - start;
         hr = Double.valueOf((diff/(1000*60)))/60;
 
 
@@ -91,11 +93,36 @@ public class BoxUtil {
         return hr;
     }
 
-    public static boolean isChecker(Box box){
-        boolean rtn = false;
-        if(box.getCheckerTime()!=null && box.getCheckerTime_end()!=null){
-            rtn = true;
+    public static HashMap<String, Double> getCheckerMap(List<Checker> list){
+        HashMap<String, Double> hashMap = new HashMap<String, Double>();
+
+        double price; //hr * 時薪
+        double value;
+        double all; //加總byDay
+        for (Checker checker : list) {
+            String key =converToString(checker.getCheckerDate());
+            double hr = BoxUtil.handleCheckerHour(checker.getCheckerTime().getTime(),checker.getCheckerTime_end().getTime());
+
+            price = hr * checker.getCheckerPrice();
+
+            if (hashMap.get(key) != null && !hashMap.isEmpty()) {
+                value = hashMap.get(key);
+                all = value + price;
+                hashMap.put(key, Double.valueOf(all));
+                System.out.println("the element:"+price+" is repeat");
+            } else {
+                price = hr * checker.getCheckerPrice();
+                hashMap.put(key, Double.valueOf(price));
+            }
         }
+
+        return hashMap;
+    }
+
+    public static String converToString(Date date){
+        String rtn = "";
+        rtn = dateFormat.format(date);
+
         return rtn;
     }
 }

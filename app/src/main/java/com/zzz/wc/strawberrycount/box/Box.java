@@ -1,6 +1,9 @@
 package com.zzz.wc.strawberrycount.box;
 
+import com.zzz.wc.strawberrycount.checker.Checker;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by YC on 2017/9/17.
@@ -22,17 +25,17 @@ public class Box {
     private int cubeYummy_plus;
     private int cubeNormal;
     private int cubeNormal_plus;
-    private double total; //作廢
+    private double total; //用來存chekcer的總金額
     private double print_flat;
     private double print_black;
-
-
-
     private double print_top;
     private double print_cube;
-    private Date checkerTime;
-    private Date checkerTime_end;
-    private double checkerPrice;
+
+    private List<Checker> checkerList;
+
+    private Date checkerTime; //作廢
+    private Date checkerTime_end; //作廢
+    private double checkerPrice; //作廢
 
 
 
@@ -219,5 +222,14 @@ public class Box {
 
     public void setCheckerTime_end(Date checkerTime_end) {
         this.checkerTime_end = checkerTime_end;
+    }
+
+
+    public List<Checker> getCheckerList() {
+        return checkerList;
+    }
+
+    public void setCheckerList(List<Checker> checkerList) {
+        this.checkerList = checkerList;
     }
 }

@@ -1,7 +1,5 @@
 package com.zzz.wc.strawberrycount.util;
 
-import com.zzz.wc.strawberrycount.database.TaskDBOpenHelper;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

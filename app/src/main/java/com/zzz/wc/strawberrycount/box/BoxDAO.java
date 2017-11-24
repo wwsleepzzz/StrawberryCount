@@ -3,12 +3,14 @@ package com.zzz.wc.strawberrycount.box;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 
+import com.zzz.wc.strawberrycount.database.BoxDBOpenHelper;
 import com.zzz.wc.strawberrycount.database.SQLiteDAOBase;
-import com.zzz.wc.strawberrycount.database.TaskDBOpenHelper;
+import com.zzz.wc.strawberrycount.util.BoxUtil;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -20,16 +22,16 @@ import java.util.List;
 public class BoxDAO extends SQLiteDAOBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private final String TABLE_NAME = TaskDBOpenHelper.TABLE;
+	private final String TABLE_NAME = BoxDBOpenHelper.TABLE_BOX;
     private String classname = "BoxDAO";
 
 	String[] columns = new String[] { "date" , "flat" ,"flat_plus" ,"black" , "black_plus",
 			"top","top_plus","cubeYellow","cubeYellow_plus","cubePink","cubePink_plus",
 			"cubeYummy" ,"cubeYummy_plus" ,"cubeNormal" ,"cubeNormal_plus","total",
 			"print_flat","print_black","print_top","print_cube",
-			TaskDBOpenHelper.checkerTime,
-			TaskDBOpenHelper.checkerTime_end,
-			TaskDBOpenHelper.checkerPrice
+			BoxDBOpenHelper.checkerTime,
+			BoxDBOpenHelper.checkerTime_end,
+			BoxDBOpenHelper.checkerPrice
 			 };
 
 	public BoxDAO(Context context)
@@ -45,7 +47,7 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 
 		ContentValues cv = ObjectToContentValues(pl);
 		String selection = "date =?";
-		String[] selectionArgs = new String[] { converToString(pl.getDate()) };
+		String[] selectionArgs = new String[] {BoxUtil.converToString(pl.getDate()) };
 
 		rows = db.update(TABLE_NAME, cv, selection, selectionArgs);
 		if (rows <= 0) {
@@ -59,6 +61,7 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 	}
 
 
+
 	/**
 	 * 用date找出一筆資料
 	 */
@@ -66,7 +69,7 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 
 		SQLiteDatabase db = taskDBOpenHelper.getReadableDatabase();
 
-		Box cr = null;
+		Box box = null;
 
 		String selection = "date = ?";
 		String selectionArgs[] =  { date};
@@ -81,51 +84,17 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 			c.moveToFirst();
 			for(int i=0; i<c.getCount();i++){
 
-				cr = dataToObject(c);
+				box = dataToObject(c);
 
 				c.moveToNext();
 			}
 
 		}
 		c.close();
-		return cr;
+		return box;
 	}
 
 
-	/**
-	 * 用date找出一筆資料
-	 */
-	public Box getByDate(Box box){
-
-		SQLiteDatabase db = taskDBOpenHelper.getReadableDatabase();
-
-		Box cr = null;
-
-		String selection = "date != ?";
-		String selectionArgs[] =  {converToString(box.getDate())};
-		String groupBy = null;
-		String having = null;
-		String orderBy = "date DESC";
-		Cursor c = db.query(TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy);
-//
-//		String selectionArgs[] =  {Util.converToString(date) };
-//		Cursor c = db.rawQuery("SELECT * FROM "+ TABLE_NAME + " WHERE date = ?", selectionArgs);
-
-		if(c.getCount()>0)
-		{
-			Log.d("cc","取到一筆!");
-			c.moveToFirst();
-			for(int i=0; i<c.getCount();i++){
-
-				cr = dataToObject(c);
-
-				c.moveToNext();
-			}
-
-		}
-		c.close();
-		return cr;
-	}
 
 
 	/**
@@ -172,7 +141,7 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 		long rows = 0;
 
 		String selection = "date =?";
-		String[] selectionArgs = new String[] { converToString(ace.getDate()) };
+		String[] selectionArgs = new String[] { BoxUtil.converToString(ace.getDate()) };
 		
 		rows = db.delete(TABLE_NAME, selection, selectionArgs);
 
@@ -196,7 +165,6 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 		Box box = (Box) obj;
 		ContentValues cv = new ContentValues();
 
-//		cv.put("date", String.valueOf(box.getDate()));
 		int i =0;
 		cv.put(columns[i], box.getDate()==null?null: dateFormat.format(box.getDate()));
 		cv.put(columns[++i], box.getFlat());
@@ -307,9 +275,9 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 		box.setPrint_black(c.getDouble(c.getColumnIndex("print_black")));
 		box.setPrint_top(c.getDouble(c.getColumnIndex("print_top")));
 		box.setPrint_cube(c.getDouble(c.getColumnIndex("print_cube")));
-		box.setCheckerTime(converterDate(c,TaskDBOpenHelper.checkerTime,hourFormat));
-		box.setCheckerTime_end(converterDate(c,TaskDBOpenHelper.checkerTime_end,hourFormat));
-		box.setCheckerPrice(c.getDouble(c.getColumnIndex(TaskDBOpenHelper.checkerPrice)));
+		box.setCheckerTime(converterDate(c, BoxDBOpenHelper.checkerTime,hourFormat));
+		box.setCheckerTime_end(converterDate(c, BoxDBOpenHelper.checkerTime_end,hourFormat));
+		box.setCheckerPrice(c.getDouble(c.getColumnIndex(BoxDBOpenHelper.checkerPrice)));
 
 
 
@@ -337,8 +305,8 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 	public void clearUpLoadRecord()
 	{
 		SQLiteDatabase db = this.taskDBOpenHelper.getWritableDatabase();
-//		db.execSQL("DROP TABLE IF EXISTS " + TaskDBOpenHelper.ANN_READ_TO_UPLOAD_TABLE);
-//		db.execSQL("CREATE TABLE IF NOT EXISTS " + TaskDBOpenHelper.ANN_READ_TO_UPLOAD_TABLE + " (empId TEXT,annUnid TEXT,readDate DATETIME,annType TEXT);");
+//		db.execSQL("DROP TABLE IF EXISTS " + BoxDBOpenHelper.ANN_READ_TO_UPLOAD_TABLE);
+//		db.execSQL("CREATE TABLE IF NOT EXISTS " + BoxDBOpenHelper.ANN_READ_TO_UPLOAD_TABLE + " (empId TEXT,annUnid TEXT,readDate DATETIME,annType TEXT);");
 
 	}
 	
@@ -359,7 +327,7 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 			return rows;
 		
 		String selection = "";
-		String unidStr = "unid=?";
+		String unidStr = " =?";
 		String orStr=" or ";
 		
 		for(int i=0; i<unidList.size(); i++){
@@ -378,17 +346,39 @@ public class BoxDAO extends SQLiteDAOBase implements Serializable {
 	}
 
 
-	public  String converToString(Date date){
-		String rtn = "";
-		rtn = dateFormat.format(date);
 
-		return rtn;
+
+
+
+	public void insertRowData(SQLiteDatabase tempDB){
+		/** copy all row of subject table */
+		Cursor cursor = tempDB.query(true, TABLE_NAME, null, null, null, null, null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Box note = dataToObject(cursor);
+			insertBox(note);
+			cursor.moveToNext();
+		}
+		cursor.close();
+	}
+	public long insertBox(Box box) {
+		return insert(TABLE_NAME,ObjectToContentValues(box));
 	}
 
-	public  String timeToString(Date date){
-		String rtn = "";
-		rtn = hourFormat.format(date);
+	public long insert(String table, ContentValues values) {
+		SQLiteDatabase db = this.taskDBOpenHelper.getWritableDatabase();
+		long index = db.insert(table, null, values);
 
-		return rtn;
+
+		if (db != null && db.isOpen()) {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return index;
 	}
+
 }
