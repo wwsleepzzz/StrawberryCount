@@ -4,18 +4,15 @@ package com.zzz.wc.strawberrycount.adpter;
  */
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.zzz.wc.strawberrycount.R;
 import com.zzz.wc.strawberrycount.checker.Checker;
-import com.zzz.wc.strawberrycount.database.BackupData;
 import com.zzz.wc.strawberrycount.util.Tag;
 import com.zzz.wc.strawberrycount.box.Box;
 import com.zzz.wc.strawberrycount.util.BoxUtil;
@@ -87,7 +84,7 @@ public class BoxAdapter extends BaseAdapter {
 
         if (row == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            row = inflater.inflate(R.layout.boxitem, parent, false);
+            row = inflater.inflate(R.layout.item_box, parent, false);
 
             holder = new CardHolder();
 

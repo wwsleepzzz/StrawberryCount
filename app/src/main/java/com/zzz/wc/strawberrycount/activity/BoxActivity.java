@@ -71,15 +71,6 @@ public class BoxActivity extends AppCompatActivity implements CheckerAdapter.Che
     private CheckerAdapter checkerAdapter;
     private MyListView checkerListView;
     private Button btn_checker;
-    //checker
-//    private EditText edit_checker_price;
-//    private TextView txtTime_start;
-//    private TextView txtTime_end;
-//    private ImageButton btnTime_start;
-//    private ImageButton btnTime_end;
-//    private Button btnStart_reset;
-//    private Button btnEnd_reset;
-//    private Button btn_checker;
 
     private Box box;
     private Box preBox;

@@ -6,16 +6,13 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.zzz.wc.strawberrycount.R;
 import com.zzz.wc.strawberrycount.checker.Checker;
-import com.zzz.wc.strawberrycount.database.BackupData;
 import com.zzz.wc.strawberrycount.util.BoxUtil;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +54,7 @@ public class CheckerAdapter extends BaseAdapter {
 
         if (row == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            row = inflater.inflate(R.layout.checkeritem, parent, false);
+            row = inflater.inflate(R.layout.item_checker, parent, false);
 
             holder = new CheckerHolder();
 

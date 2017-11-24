@@ -25,13 +25,12 @@ public class Box {
     private int cubeYummy_plus;
     private int cubeNormal;
     private int cubeNormal_plus;
-    private double total; //用來存chekcer的總金額
+    private double total; //作廢
     private double print_flat;
     private double print_black;
     private double print_top;
     private double print_cube;
 
-    private List<Checker> checkerList;
 
     private Date checkerTime; //作廢
     private Date checkerTime_end; //作廢
@@ -225,11 +224,4 @@ public class Box {
     }
 
 
-    public List<Checker> getCheckerList() {
-        return checkerList;
-    }
-
-    public void setCheckerList(List<Checker> checkerList) {
-        this.checkerList = checkerList;
-    }
 }
